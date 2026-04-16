@@ -56,17 +56,22 @@ export default async function RootLayout({
             {currentUser && (
               <div className="baddi-card" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 16px', marginBottom: '24px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                  <img src={avatarUrl} alt={currentUser.name} style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'rgba(0,0,0,0.2)', padding: '2px' }} />
+                  <img src={avatarUrl} alt={currentUser.name} style={{ width: '38px', height: '38px', borderRadius: '50%', background: 'rgba(0,0,0,0.2)', padding: '2px' }} />
                   <div>
-                    <div style={{ fontSize: '0.75rem', color: 'var(--baddi-sub)' }}>Logged in as</div>
-                    <div style={{ fontWeight: 600 }}>{currentUser.name}</div>
+                    <div style={{ fontSize: '0.7rem', color: 'var(--baddi-sub)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Logged in</div>
+                    <div style={{ fontWeight: 600, fontSize: '0.95rem' }}>{currentUser.name}</div>
                   </div>
                 </div>
-                <form action={logout} style={{ margin: 0 }}>
-                  <button type="submit" className="baddi-btn" style={{ padding: '8px 16px', fontSize: '0.85rem', background: 'rgba(255,59,48,0.1)', color: '#ff453a', border: '1px solid rgba(255,59,48,0.2)' }}>
-                    Sign Out
-                  </button>
-                </form>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+                  <a href="/" title="Dashboard" style={{ color: 'var(--baddi-text)', textDecoration: 'none', fontSize: '0.95rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '6px', opacity: 0.9 }}>
+                    <span style={{ fontSize: '1.2rem' }}>🏠</span> Home
+                  </a>
+                  <form action={logout} style={{ margin: 0, display: 'flex', alignItems: 'center' }}>
+                    <button type="submit" title="Sign Out" style={{ background: 'none', border: 'none', color: '#ff453a', cursor: 'pointer', padding: 0, opacity: 0.9, display: 'flex' }}>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                    </button>
+                  </form>
+                </div>
               </div>
             )}
             
