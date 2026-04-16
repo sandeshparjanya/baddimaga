@@ -54,7 +54,7 @@ export default async function RootLayout({
   const userId = cookieStore.get('baddi_user_id')?.value;
   let currentUser = null;
   let avatarUrl = '';
-  
+
   if (userId) {
     const [user] = await db.select().from(users).where(eq(users.id, userId));
     if (user) {
@@ -72,7 +72,7 @@ export default async function RootLayout({
         <ToasterProvider />
         <div style={{ minHeight: '100dvh', display: 'flex', flexDirection: 'column' }}>
           <div style={{ flex: 1 }}>{children}</div>
-          
+
           <div className="baddi-container" style={{ paddingBottom: '32px' }}>
             {currentUser && (
               <div className="baddi-card" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 16px', marginBottom: '24px' }}>
@@ -95,7 +95,7 @@ export default async function RootLayout({
                 </div>
               </div>
             )}
-            
+
             <div className="easter-egg">
               Built with ❤️ and ☕ for Sandy, Punith (US party), & Sangamesh.
               <br />Keep hustling.

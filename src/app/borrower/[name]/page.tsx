@@ -60,7 +60,12 @@ export default async function BorrowerPage({ params }: { params: Promise<{ name:
           <h1 className="baddi-title" style={{ fontSize: '1.8rem' }}>{decodedName}</h1>
           <p className="baddi-subtitle" style={{ color: 'var(--baddi-primary)', marginTop: '4px' }}>Total Deployed: {formatRupees(totalPrincipal)}</p>
         </div>
-        <DeleteBorrowerButton borrowerName={decodedName} />
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', alignItems: 'flex-end' }}>
+          <Link href={`/new-loan?borrower=${encodeURIComponent(decodedName)}`} className="baddi-btn" style={{ padding: '6px 12px', fontSize: '0.8rem', background: 'rgba(52,211,153,0.1)', color: 'var(--baddi-success)', border: '1px solid rgba(52,211,153,0.3)', width: 'auto', textAlign: 'center', textDecoration: 'none' }}>
+            + Top Up
+          </Link>
+          <DeleteBorrowerButton borrowerName={decodedName} />
+        </div>
       </header>
 
       {/* Aggregate Details */}

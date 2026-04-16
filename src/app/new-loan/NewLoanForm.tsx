@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 import { createLoan } from '../actions';
 
-export default function NewLoanForm() {
+export default function NewLoanForm({ initialBorrower = '' }: { initialBorrower?: string }) {
   const [principal, setPrincipal] = useState<string>('');
   const [rate, setRate] = useState<string>('2');
   const [expectedInterest, setExpectedInterest] = useState<string>('');
@@ -20,7 +20,11 @@ export default function NewLoanForm() {
       const formData = new FormData(e.currentTarget);
       await createLoan(formData);
       toast.success('New Saala successfully deployed! 🚀');
-      router.push('/');
+      if (initialBorrower) {
+        router.push(`/borrower/${encodeURIComponent(initialBorrower)}`);
+      } else {
+        router.push('/');
+      }
     } catch (err) {
       toast.error('Failed to deploy capital.');
     } finally {
@@ -49,6 +53,7 @@ export default function NewLoanForm() {
           type="text" 
           name="borrowerName" 
           required 
+          defaultValue={initialBorrower}
           className="baddi-input" 
           placeholder="e.g. Sandy Uncle (More)" 
         />
