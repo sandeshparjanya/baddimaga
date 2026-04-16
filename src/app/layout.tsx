@@ -19,7 +19,28 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Baddimaga Syndicate",
-  description: "The EMI Syndicate",
+  description: "The exclusive 3-man EMI lending syndicate.",
+  openGraph: {
+    title: "Baddimaga Syndicate",
+    description: "The exclusive 3-man EMI lending syndicate.",
+    url: "https://baddimaga.shaivas.com",
+    siteName: "Baddimaga",
+    images: [
+      {
+        url: "https://baddimaga.shaivas.com/opengraph-image",
+        width: 1200,
+        height: 630,
+        alt: "Baddimaga - The EMI Syndicate",
+      },
+    ],
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Baddimaga Syndicate",
+    description: "The exclusive 3-man EMI lending syndicate.",
+    images: ["https://baddimaga.shaivas.com/opengraph-image"],
+  },
 };
 
 import ToasterProvider from "./ToasterProvider";
