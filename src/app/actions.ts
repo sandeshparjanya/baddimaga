@@ -1,7 +1,7 @@
 'use server';
 
 import { db } from '../db';
-import { payments, loans, users } from '../db/schema';
+import { payments, loans, users, comments } from '../db/schema';
 import { eq } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
@@ -92,20 +92,40 @@ export async function logout() {
 }
 
 export async function addComment(formData: FormData) {
-  const loanId = formData.get('loanId') as string;
+  const borrowerName = formData.get('borrowerName') as string;
   const content = formData.get('content') as string;
-  if (!loanId || !content) return { error: 'Missing data' };
+  if (!borrowerName || !content) return { error: 'Missing data' };
 
   const cookieStore = await cookies();
   const userId = cookieStore.get('baddi_user_id')?.value;
   if (!userId) return { error: 'Not Logged in' };
 
   await db.insert(comments).values({
-    loanId,
+    borrowerName,
     userId,
     content,
   });
 
-  revalidatePath(`/saala/${loanId}`);
+  revalidatePath(`/borrower/${encodeURIComponent(borrowerName)}`);
+  return { success: true };
+}
+
+export async function deleteComment(commentId: string, borrowerName: string) {
+  const cookieStore = await cookies();
+  const userId = cookieStore.get('baddi_user_id')?.value;
+  if (!userId) return { error: 'Not Logged in' };
+
+  await db.delete(comments).where(eq(comments.id, commentId));
+  revalidatePath(`/borrower/${encodeURIComponent(borrowerName)}`);
+  return { success: true };
+}
+
+export async function editComment(commentId: string, content: string, borrowerName: string) {
+  const cookieStore = await cookies();
+  const userId = cookieStore.get('baddi_user_id')?.value;
+  if (!userId) return { error: 'Not Logged in' };
+
+  await db.update(comments).set({ content }).where(eq(comments.id, commentId));
+  revalidatePath(`/borrower/${encodeURIComponent(borrowerName)}`);
   return { success: true };
 }

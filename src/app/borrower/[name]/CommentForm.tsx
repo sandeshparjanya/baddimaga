@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import toast from 'react-hot-toast';
 import { addComment } from '../../actions';
 
-export default function CommentForm({ loanId }: { loanId: string }) {
+export default function CommentForm({ borrowerName }: { borrowerName: string }) {
   const [loading, setLoading] = useState(false);
   const [content, setContent] = useState('');
 
@@ -14,7 +14,7 @@ export default function CommentForm({ loanId }: { loanId: string }) {
     
     try {
       const formData = new FormData();
-      formData.append('loanId', loanId);
+      formData.append('borrowerName', borrowerName);
       formData.append('content', content);
       
       const res = await addComment(formData);
@@ -22,7 +22,7 @@ export default function CommentForm({ loanId }: { loanId: string }) {
         toast.error(res.error);
       } else {
         setContent('');
-        toast.success('Message sent');
+        toast.success('Message sent!');
       }
     } catch (err) {
       toast.error('Failed to post message.');
@@ -37,7 +37,7 @@ export default function CommentForm({ loanId }: { loanId: string }) {
         type="text" 
         value={content}
         onChange={e => setContent(e.target.value)}
-        placeholder="Type a message..." 
+        placeholder={`Add a note for ${borrowerName}...`} 
         className="baddi-input"
         style={{ flex: 1, borderRadius: '24px' }}
         required

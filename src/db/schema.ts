@@ -29,7 +29,7 @@ export const payments = pgTable("payments", {
 
 export const comments = pgTable("comments", {
   id: uuid("id").defaultRandom().primaryKey(),
-  loanId: uuid("loan_id").references(() => loans.id).notNull(),
+  borrowerName: text("borrower_name").notNull(),
   userId: uuid("user_id").references(() => users.id).notNull(),
   content: text("content").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),

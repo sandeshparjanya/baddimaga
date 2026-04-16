@@ -112,7 +112,7 @@ export default async function Home() {
       <h3 style={{ margin: '32px 0 16px', fontSize: '1.2rem', fontWeight: 600 }}>Active Saalas</h3>
 
       {Object.entries(groupedLoans).map(([groupName, group]: [string, any]) => (
-        <div key={groupName} className="baddi-card" style={{ padding: '16px', marginBottom: '20px' }}>
+        <Link key={groupName} href={`/borrower/${encodeURIComponent(groupName)}`} className="baddi-card" style={{ padding: '16px', marginBottom: '20px', display: 'block', textDecoration: 'none', color: 'inherit' }}>
           <div className="flex-between" style={{ marginBottom: '12px', borderBottom: '1px dashed rgba(255,255,255,0.1)', paddingBottom: '8px' }}>
             <div style={{ fontWeight: 800, fontSize: '1.2rem', color: 'var(--baddi-text)' }}>{groupName}</div>
             <div style={{ textAlign: 'right', fontWeight: 800, fontSize: '1.1rem' }}>
@@ -121,14 +121,14 @@ export default async function Home() {
           </div>
           
           {group.loans.map((loan: any) => (
-            <Link key={loan.id} href={`/saala/${loan.id}`} style={{ display: 'flex', justifyContent: 'space-between', padding: '12px 0', fontSize: '0.9rem', textDecoration: 'none', color: 'inherit', borderBottom: '1px solid rgba(255,255,255,0.02)' }}>
-              <div>↳ {formatRupees(loan.principalAmount)} @ {loan.interestRate}% <br/><span style={{ color: 'var(--baddi-sub)' }}>&nbsp;&nbsp;&nbsp;(Due: {loan.dueDateStr})</span></div>
+            <div key={loan.id} style={{ display: 'flex', justifyContent: 'space-between', padding: '12px 0', fontSize: '0.9rem', borderBottom: '1px solid rgba(255,255,255,0.02)' }}>
+              <div>{formatRupees(loan.principalAmount)} @ {loan.interestRate}% <br/><span style={{ color: 'var(--baddi-sub)' }}>(Due: {loan.dueDateStr})</span></div>
               <div style={{ color: 'var(--baddi-success)', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '8px' }}>
-                +{formatRupees(loan.interestAmountDisplay || 0)} <span style={{ fontSize: '1.2rem', opacity: 0.8 }}>💬</span>
+                +{formatRupees(loan.interestAmountDisplay || 0)}
               </div>
-            </Link>
+            </div>
           ))}
-        </div>
+        </Link>
       ))}
 
       <div style={{ marginTop: '32px', display: 'flex', gap: '12px' }}>
