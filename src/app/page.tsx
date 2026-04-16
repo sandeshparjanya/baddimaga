@@ -11,13 +11,6 @@ export default async function Home() {
   const cookieStore = await cookies();
   const userId = cookieStore.get('baddi_user_id')?.value;
   if (!userId) redirect('/login');
-  
-  const [currentUser] = await db.select().from(users).where(eq(users.id, userId));
-  
-  let avatarUrl = `https://api.dicebear.com/8.x/micah/svg?seed=${currentUser?.name || 'unknown'}&backgroundColor=transparent`;
-  if (currentUser?.name === 'Sandy') avatarUrl = 'https://api.dicebear.com/8.x/micah/svg?seed=Felix&backgroundColor=transparent';
-  if (currentUser?.name === 'Punith') avatarUrl = 'https://api.dicebear.com/8.x/micah/svg?seed=Leo&backgroundColor=transparent';
-  if (currentUser?.name === 'Sangam') avatarUrl = 'https://api.dicebear.com/8.x/micah/svg?seed=Jude&backgroundColor=transparent';
 
   const allLoans = await db.select().from(loans).where(eq(loans.status, 'active'));
   
@@ -68,27 +61,10 @@ export default async function Home() {
 
   return (
     <main className="baddi-container">
-      <header className="baddi-header" style={{ marginBottom: '16px' }}>
+      <header className="baddi-header" style={{ marginBottom: '24px' }}>
         <h1 className="baddi-title">Baddimaga</h1>
         <p className="baddi-subtitle">The EMI Syndicate</p>
       </header>
-
-      {currentUser && (
-        <div className="baddi-card" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 16px', marginBottom: '24px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <img src={avatarUrl} alt={currentUser.name} style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'rgba(0,0,0,0.2)', padding: '2px' }} />
-            <div>
-              <div style={{ fontSize: '0.75rem', color: 'var(--baddi-sub)' }}>Logged in as</div>
-              <div style={{ fontWeight: 600 }}>{currentUser.name}</div>
-            </div>
-          </div>
-          <form action={logout} style={{ margin: 0 }}>
-            <button type="submit" className="baddi-btn" style={{ padding: '8px 16px', fontSize: '0.85rem', background: 'rgba(255,59,48,0.1)', color: '#ff453a', border: '1px solid rgba(255,59,48,0.2)' }}>
-              Sign Out
-            </button>
-          </form>
-        </div>
-      )}
 
       <div className="baddi-card">
         <div className="metric-label">Actual Deficit</div>
@@ -161,11 +137,6 @@ export default async function Home() {
           </div>
         </div>
       )}
-
-      <div className="easter-egg">
-        Built with ❤️ and ☕ for Sandy, Punith (US party), & Sangamesh.
-        <br />Keep hustling.
-      </div>
     </main>
   );
 }
