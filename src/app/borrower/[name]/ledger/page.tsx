@@ -2,7 +2,7 @@ import React from 'react';
 import Link from 'next/link';
 import { db } from '../../../db';
 import { loans, payments } from '../../../db/schema';
-import { eq, desc, inArray } from 'drizzle-orm';
+import { eq, desc, inArray, ilike } from 'drizzle-orm';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 
@@ -14,7 +14,7 @@ export default async function BorrowerLedgerPage({ params }: { params: Promise<{
   const userId = cookieStore.get('baddi_user_id')?.value;
   if (!userId) redirect('/login');
 
-  const borrowerLoans = await db.select().from(loans).where(eq(loans.borrowerName, decodedName));
+  const borrowerLoans = await db.select().from(loans).where(ilike(loans.borrowerName, `%${decodedName}%`));
   const loanIds = borrowerLoans.map(l => l.id);
 
   let allPayments: any[] = [];

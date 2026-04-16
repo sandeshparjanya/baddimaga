@@ -2,7 +2,7 @@
 
 import { db } from '../db';
 import { payments, loans, users, comments } from '../db/schema';
-import { eq } from 'drizzle-orm';
+import { eq, ilike } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { cookies } from 'next/headers';
@@ -127,5 +127,67 @@ export async function editComment(commentId: string, content: string, borrowerNa
 
   await db.update(comments).set({ content }).where(eq(comments.id, commentId));
   revalidatePath(`/borrower/${encodeURIComponent(borrowerName)}`);
+  return { success: true };
+}
+
+export async function deleteLoan(loanId: string, borrowerGroup: string, loanDesc: string) {
+  const cookieStore = await cookies();
+  const userId = cookieStore.get('baddi_user_id')?.value;
+  if (!userId) return { error: 'Not Logged in' };
+
+  await db.delete(loans).where(eq(loans.id, loanId));
+  
+  await db.insert(comments).values({
+    borrowerName: borrowerGroup,
+    userId,
+    content: `[SYSTEM] Deleted loan completely: ${loanDesc}`,
+  });
+
+  revalidatePath('/');
+  revalidatePath(`/borrower/${encodeURIComponent(borrowerGroup)}`);
+  return { success: true };
+}
+
+export async function editLoan(loanId: string, borrowerGroup: string, updates: any) {
+  const cookieStore = await cookies();
+  const userId = cookieStore.get('baddi_user_id')?.value;
+  if (!userId) return { error: 'Not Logged in' };
+
+  await db.update(loans).set({ ...updates }).where(eq(loans.id, loanId));
+
+  await db.insert(comments).values({
+    borrowerName: borrowerGroup,
+    userId,
+    content: `[SYSTEM] Modified loan details for sub-borrower: ${updates.borrowerName || loanId}`,
+  });
+
+  revalidatePath('/');
+  revalidatePath(`/borrower/${encodeURIComponent(borrowerGroup)}`);
+  return { success: true };
+}
+
+export async function deleteBorrower(borrowerGroup: string) {
+  const cookieStore = await cookies();
+  const userId = cookieStore.get('baddi_user_id')?.value;
+  if (!userId) return { error: 'Not Logged in' };
+
+  // Instead of deleting, just set all their active loans to 'closed'
+  const targetLoans = await db.select().from(loans).where(ilike(loans.borrowerName, `%${borrowerGroup}%`));
+  const activeIds = targetLoans.filter(l => l.status === 'active').map(l => l.id);
+  
+  if (activeIds.length > 0) {
+    for (const id of activeIds) {
+       await db.update(loans).set({ status: 'closed' }).where(eq(loans.id, id));
+    }
+  }
+
+  await db.insert(comments).values({
+    borrowerName: borrowerGroup,
+    userId,
+    content: `[SYSTEM] Terminated borrower and closed all active saalas.`,
+  });
+
+  revalidatePath('/');
+  revalidatePath(`/borrower/${encodeURIComponent(borrowerGroup)}`);
   return { success: true };
 }

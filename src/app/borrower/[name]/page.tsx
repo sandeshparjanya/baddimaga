@@ -2,9 +2,11 @@ import React from 'react';
 import Link from 'next/link';
 import { db } from '../../../db';
 import { loans, comments, users, payments } from '../../../db/schema';
-import { eq, desc, inArray } from 'drizzle-orm';
+import { eq, desc, inArray, ilike } from 'drizzle-orm';
 import CommentForm from './CommentForm';
 import CommentItem from './CommentItem';
+import LoanBreakdownItem from './LoanBreakdownItem';
+import DeleteBorrowerButton from './DeleteBorrowerButton';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 
@@ -18,7 +20,7 @@ export default async function BorrowerPage({ params }: { params: Promise<{ name:
 
   const [currentUserObj] = await db.select().from(users).where(eq(users.id, userId));
 
-  const borrowerLoans = await db.select().from(loans).where(eq(loans.borrowerName, decodedName));
+  const borrowerLoans = await db.select().from(loans).where(ilike(loans.borrowerName, `%${decodedName}%`));
   const activeLoans = borrowerLoans.filter(l => l.status === 'active');
   const totalPrincipal = activeLoans.reduce((sum, l) => sum + l.principalAmount, 0);
   const totalInterest = activeLoans.reduce((sum, l) => sum + (l.interestAmountDisplay || 0), 0);
@@ -53,13 +55,16 @@ export default async function BorrowerPage({ params }: { params: Promise<{ name:
 
   return (
     <main className="baddi-container" style={{ padding: '24px 16px' }}>
-      <header className="baddi-header" style={{ marginBottom: '24px' }}>
-        <h1 className="baddi-title" style={{ fontSize: '1.8rem' }}>{decodedName}</h1>
-        <p className="baddi-subtitle" style={{ color: 'var(--baddi-primary)', marginTop: '4px' }}>Total Deployed: {formatRupees(totalPrincipal)}</p>
+      <header className="baddi-header" style={{ marginBottom: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+        <div>
+          <h1 className="baddi-title" style={{ fontSize: '1.8rem' }}>{decodedName}</h1>
+          <p className="baddi-subtitle" style={{ color: 'var(--baddi-primary)', marginTop: '4px' }}>Total Deployed: {formatRupees(totalPrincipal)}</p>
+        </div>
+        <DeleteBorrowerButton borrowerName={decodedName} />
       </header>
 
       {/* Aggregate Details */}
-      <div className="baddi-card" style={{ marginBottom: '32px' }}>
+      <div className="baddi-card" style={{ marginBottom: '16px' }}>
         <div className="flex-between">
           <span className="metric-label">Active Loans</span>
           <span style={{ fontWeight: 600 }}>{activeLoans.length}</span>
@@ -69,6 +74,19 @@ export default async function BorrowerPage({ params }: { params: Promise<{ name:
           <span style={{ fontWeight: 600, color: 'var(--baddi-success)' }}>{formatRupees(totalInterest)}</span>
         </div>
       </div>
+
+      {activeLoans.length > 0 && (
+        <div className="baddi-card" style={{ padding: '0', marginBottom: '32px' }}>
+          <div style={{ padding: '12px 16px', fontSize: '0.8rem', color: 'var(--baddi-sub)', textTransform: 'uppercase', letterSpacing: '1px', borderBottom: '1px solid rgba(255,255,255,0.05)', fontWeight: 600 }}>
+            Loan Breakdowns
+          </div>
+          {activeLoans.map((loan, idx) => (
+             <div key={loan.id} style={{ borderBottom: idx === activeLoans.length - 1 ? 'none' : '1px dashed rgba(255,255,255,0.05)' }}>
+               <LoanBreakdownItem loan={loan} borrowerGroup={decodedName} />
+             </div>
+          ))}
+        </div>
+      )}
 
       <h3 style={{ fontSize: '1.2rem', fontWeight: 600, marginBottom: '16px' }}>Recent Kassu Banthu</h3>
       <div className="baddi-card" style={{ padding: '0 16px', marginBottom: '32px' }}>
