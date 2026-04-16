@@ -1,7 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
-import { db } from '../../../db';
-import { loans, payments } from '../../../db/schema';
+import { db } from '../../../../db';
+import { loans, payments } from '../../../../db/schema';
 import { eq, desc, inArray, ilike } from 'drizzle-orm';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
